@@ -51,7 +51,7 @@ class Home extends StatelessWidget {
                 items: companies,
                 onChanged: (value) => company.value = value,
                 alignment: AlignmentDirectional.topCenter,
-                focusColor: Colors.white
+                focusColor: Colors.white,
               ),
             ),
             const Padding(
