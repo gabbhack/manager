@@ -9,11 +9,12 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'MobX',
+      title: 'Менеджмент',
       theme: ThemeData(
         primarySwatch: Colors.blue,
+        useMaterial3: true
       ),
-      home: const MyHomePage(),
+      home: const Home()
     );
   }
 }

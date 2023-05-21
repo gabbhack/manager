@@ -1,39 +1,66 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
-import 'package:manager/stores/counter.dart';
+import 'package:manager/stores/company.dart';
 
-final counter = Counter(); // Instantiate the store
+final company = Company();
 
-class MyHomePage extends StatelessWidget {
-  const MyHomePage({super.key});
+const companies = [
+  DropdownMenuItem<String>(
+    value: "Сбер",
+    child: Text("Сбер"),
+  ),
+  DropdownMenuItem<String>(
+    value: "Уртиси",
+    child: Text("Уртиси"),
+  ),
+  DropdownMenuItem<String>(
+    value: "РосАтом",
+    child: Text("РосАтом"),
+  )
+];
+
+class Home extends StatelessWidget {
+  const Home({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('MobX Counter'),
+        title: const Text('Менеджмент'),
       ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
+          children: [
             const Text(
-              'You have pushed the button this many times:',
+              "Выбор компании",
+              style: TextStyle(
+                fontSize: 40,
+                color: Colors.black,
+              ),
             ),
-            // Wrapping in the Observer will automatically re-render on changes to counter.value
             Observer(
-              builder: (_) => Text(
-                    '${counter.value}',
-                    style: Theme.of(context).textTheme.headlineMedium,
-                  ),
+              builder: (_) => DropdownButton<String>(
+                hint: const Text("Выбрать"),
+                style: const TextStyle(
+                  fontSize: 30,
+                  color: Colors.black,
+                ),
+                underline: Container(),
+                value: company.value,
+                items: companies,
+                onChanged: (value) => company.value = value,
+              ),
+            ),
+            const Padding(
+              padding: EdgeInsets.only(top: 20),
+              child: FloatingActionButton.extended(
+                onPressed: null,
+                label: Text("Выбрать"),
+              ),
             ),
           ],
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: counter.increment,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
       ),
     );
   }
