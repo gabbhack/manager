@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:manager/stores/company.dart';
+import 'package:manager/widgets/resume.dart';
 
 final company = Company();
 
@@ -35,7 +36,7 @@ class Home extends StatelessWidget {
             const Text(
               "Выбор компании",
               style: TextStyle(
-                fontSize: 40,
+                fontSize: 20,
                 color: Colors.black,
               ),
             ),
@@ -43,7 +44,7 @@ class Home extends StatelessWidget {
               builder: (_) => DropdownButton<String>(
                 hint: const Text("Выбрать"),
                 style: const TextStyle(
-                  fontSize: 30,
+                  fontSize: 20,
                   color: Colors.black,
                 ),
                 underline: Container(),
@@ -51,14 +52,25 @@ class Home extends StatelessWidget {
                 items: companies,
                 onChanged: (value) => company.value = value,
                 alignment: AlignmentDirectional.topCenter,
-                focusColor: Colors.white,
+                focusColor: Colors.transparent,
               ),
             ),
-            const Padding(
-              padding: EdgeInsets.only(top: 20),
-              child: FloatingActionButton.extended(
-                onPressed: null,
-                label: Text("Выбрать"),
+            Padding(
+              padding: const EdgeInsets.only(top: 20),
+              child: Observer(
+                builder: (_) => FloatingActionButton.extended(
+                  onPressed: company.value != null
+                      ? () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute<void>(
+                              builder: (context) => const Resume(),
+                            ),
+                          );
+                        }
+                      : null,
+                  label: const Text("Выбрать"),
+                ),
               ),
             ),
           ],

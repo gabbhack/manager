@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:manager/widgets/home.dart';
+import 'package:manager/widgets/company.dart';
 
 void main() => runApp(const MyApp());
 
@@ -12,9 +12,9 @@ class MyApp extends StatelessWidget {
       title: 'Менеджмент',
       theme: ThemeData(
         primarySwatch: Colors.blue,
-        useMaterial3: true
+        useMaterial3: true,
       ),
-      home: const Home()
+      home: const Home(),
     );
   }
 }
