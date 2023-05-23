@@ -1,24 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:manager/repositories/companies.dart';
 import 'package:manager/stores/company.dart';
-import 'package:manager/widgets/resume.dart';
+import 'package:manager/widgets/workers.dart';
 
+final companies = loadCompanies();
 final company = Company();
 
-const companies = [
-  DropdownMenuItem<String>(
-    value: "Сбер",
-    child: Text("Сбер"),
-  ),
-  DropdownMenuItem<String>(
-    value: "Уртиси",
-    child: Text("Уртиси"),
-  ),
-  DropdownMenuItem<String>(
-    value: "РосАтом",
-    child: Text("РосАтом"),
-  )
-];
+final companyWidgets = companies
+    .map(
+      (e) => DropdownMenuItem<String>(value: e.name, child: Text(e.name)),
+    )
+    .toList();
 
 class Home extends StatelessWidget {
   const Home({super.key});
@@ -49,7 +42,7 @@ class Home extends StatelessWidget {
                 ),
                 underline: Container(),
                 value: company.value,
-                items: companies,
+                items: companyWidgets,
                 onChanged: (value) => company.value = value,
                 alignment: AlignmentDirectional.topCenter,
                 focusColor: Colors.transparent,
@@ -64,7 +57,8 @@ class Home extends StatelessWidget {
                           Navigator.push(
                             context,
                             MaterialPageRoute<void>(
-                              builder: (context) => const Resume(),
+                              builder: (context) =>
+                                  Workers(company: company.value!),
                             ),
                           );
                         }

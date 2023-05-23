@@ -1,60 +1,35 @@
+import 'dart:collection';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:manager/repositories/companies.dart';
 import 'package:manager/stores/position.dart';
 import 'package:manager/stores/skills.dart';
 import 'package:collection/collection.dart';
 import 'package:mobx/mobx.dart';
 
-const positions = [
-  DropdownMenuItem<String>(
-    value: "Бекенд разработчик",
-    child: Text("Бекенд разработчик"),
-  ),
-  DropdownMenuItem<String>(
-    value: "Фронтенд разработчик",
-    child: Text("Фронтед разработчик"),
-  ),
-  DropdownMenuItem<String>(
-    value: "Аналитик",
-    child: Text("Аналитик"),
-  )
-];
+final companies = loadCompanies();
 
-const positionSkills = {
-  "Бекенд разработчик": [
-    "Python",
-    "SQL",
-    "Git",
-    "PostgreSQL",
-    "Docker",
-    "docker-compose"
-  ]
-};
-
-int computeCompatibility(String? position, List<String> skills) {
+int computeCompatibility(
+  String company,
+  String? position,
+  List<String> skills,
+) {
   if (position == null) {
     return 0;
   }
-  final commonElements = Set<String>.from(positionSkills[position]!)
-      .intersection(Set.from(skills));
-  final numCommonElements = commonElements.length;
-  final totalElements =
-      Set<String>.from(positionSkills[position]!).union(Set.from(skills));
-  final numTotalElements = totalElements.length;
-  return ((numCommonElements / numTotalElements) * 100).toInt();
+  final foundCompany =
+      companies.firstWhere((element) => element.name == company);
+  final foundPosition =
+      foundCompany.positions.firstWhere((element) => element.name == position);
+  final commonElements =
+      Set<String>.from(foundPosition.skills).intersection(Set.from(skills));
+  return commonElements.length * 100 ~/ foundPosition.skills.length;
 }
 
-final skills = Skills();
-final position = Position();
-final compatibility = Computed(
-  () => computeCompatibility(
-    position.value,
-    skills.values.toList(),
-  ),
-);
-
 class Resume extends StatefulWidget {
-  const Resume({super.key});
+  final String company;
+  const Resume({super.key, required this.company});
 
   @override
   State<Resume> createState() => _ResumeState();
@@ -63,83 +38,96 @@ class Resume extends StatefulWidget {
 class _ResumeState extends State<Resume> {
   final _formKey = GlobalKey<FormState>();
   final fioController = TextEditingController();
+  final skills = Skills();
+  final position = Position();
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Менеджмент'),
+    final compatibility = Computed(
+      () => computeCompatibility(
+        widget.company,
+        position.value,
+        skills.values.toList(),
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              alignment: Alignment.center,
-              width: MediaQuery.of(context).size.width * 0.3,
-              child: Form(
-                key: _formKey,
-                child: TextFormField(
-                  controller: fioController,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Введите текст';
-                    }
-                    return null;
-                  },
-                  decoration: const InputDecoration(
-                    border: OutlineInputBorder(),
-                    labelText: "ФИО",
-                  ),
+    );
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            alignment: Alignment.center,
+            width: MediaQuery.of(context).size.width * 0.3,
+            child: Form(
+              key: _formKey,
+              child: TextFormField(
+                controller: fioController,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Введите текст';
+                  }
+                  return null;
+                },
+                decoration: const InputDecoration(
+                  border: OutlineInputBorder(),
+                  labelText: "ФИО",
                 ),
               ),
             ),
-            const SizedBox(height: 16.0),
-            Observer(
-              builder: (_) => Wrap(
-                spacing: 10,
-                children: [
-                  ...skills.values
-                      .mapIndexed<ElevatedButton>(
-                        (index, e) => ElevatedButton(
-                          onPressed: null,
-                          onLongPress: () => skills.deleteSkill(index),
-                          child: Text(e),
-                        ),
-                      )
-                      .toList(),
-                  ElevatedButton(
-                    onPressed: () => _dialogBuilder(context),
-                    child: const Text('Добавить скилл'),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 16.0),
-            Observer(
-              builder: (_) => DropdownButton<String>(
-                hint: const Text("Выбрать"),
-                style: const TextStyle(
-                  fontSize: 20,
-                  color: Colors.black,
+          ),
+          const SizedBox(height: 16.0),
+          Observer(
+            builder: (_) => Wrap(
+              spacing: 10,
+              children: [
+                ...skills.values
+                    .mapIndexed<ElevatedButton>(
+                      (index, e) => ElevatedButton(
+                        onPressed: null,
+                        onLongPress: () => skills.deleteSkill(index),
+                        child: Text(e),
+                      ),
+                    )
+                    .toList(),
+                ElevatedButton(
+                  onPressed: () => _dialogBuilder(context),
+                  child: const Text('Добавить скилл'),
                 ),
-                underline: Container(),
-                value: position.value,
-                items: positions,
-                onChanged: (value) => position.value = value,
-                alignment: AlignmentDirectional.topCenter,
-                focusColor: Colors.transparent,
-              ),
+              ],
             ),
-            const SizedBox(height: 16.0),
-            Observer(
-              builder: (_) => Text(
-                "${compatibility.value}%",
-                style: const TextStyle(fontSize: 20),
+          ),
+          const SizedBox(height: 16.0),
+          Observer(
+            builder: (_) => DropdownButton<String>(
+              hint: const Text("Выбрать"),
+              style: const TextStyle(
+                fontSize: 20,
+                color: Colors.black,
               ),
-            )
-          ],
-        ),
+              underline: Container(),
+              value: position.value,
+              items: companies
+                  .firstWhere((element) => element.name == widget.company)
+                  .positions
+                  .map(
+                    (e) => DropdownMenuItem(
+                      value: e.name,
+                      child: Text(e.name),
+                    ),
+                  )
+                  .toList(),
+              onChanged: (value) => position.value = value,
+              alignment: AlignmentDirectional.topCenter,
+              focusColor: Colors.transparent,
+            ),
+          ),
+          const SizedBox(height: 16.0),
+          Observer(
+            builder: (_) => Text(
+              "${compatibility.value}%",
+              style: const TextStyle(fontSize: 20),
+            ),
+          )
+        ],
       ),
     );
   }

@@ -26,7 +26,7 @@ mixin _$Skills on _SkillsBase, Store {
   @override
   void deleteSkill(int index) {
     final _$actionInfo = _$_SkillsBaseActionController.startAction(
-        name: '_SkillsBase.deleteSkill');
+        name: '_SkillsBase.deleteSkill',);
     try {
       return super.deleteSkill(index);
     } finally {

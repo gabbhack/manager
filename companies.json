@@ -1,0 +1,24 @@
+[
+    {
+        "name": "Google",
+        "positions": [
+            {
+                "name": "Backend",
+                "skills": ["Python", "Git", "Docker"]
+            },
+            {
+                "name": "Frontend",
+                "skills": ["JS", "Git", "HTML", "CSS"]
+            }
+        ]
+    },
+    {
+        "name": "Сбер",
+        "positions": [
+            {
+                "name": "ML",
+                "skills": ["Python", "Git", "PyTorch"]
+            }
+        ]
+    }
+]
