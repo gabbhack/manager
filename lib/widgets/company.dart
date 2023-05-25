@@ -67,6 +67,8 @@ class Home extends StatelessWidget {
                 ),
               ),
             ),
+            const SizedBox(height: 10,),
+            const Text("Агапитов, Габбасов, Громут, Колташев, Овчинников, Резников")
           ],
         ),
       ),
